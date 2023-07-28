@@ -27,8 +27,37 @@ public class GithubTests {
         $("div#wiki-pages-box").shouldHave(text("SoftAssertions"));
         $("div#wiki-pages-box").$(byText("SoftAssertions")).click();
 // Откройте страницу SoftAssertions, проверьте что внутри есть пример кода для JUnit5
-        $("a#user-content-3-using-junit5-extend-test-class").parent().sibling(0).shouldHave(text("SoftAssertsExtension"));
-        $("a#user-content-3-using-junit5-extend-test-class").parent().sibling(2).shouldHave(text("SoftAssertsExtension"));
+        $("a#user-content-3-using-junit5-extend-test-class").parent().sibling(0).shouldHave(text("""
+
+                @ExtendWith({SoftAssertsExtension.class})
+                    class Tests {
+                        @Test
+                        void test() {
+                            Configuration.assertionMode = SOFT;
+                            open("page.html");
+
+                            $("#first").should(visible).click();
+                            $("#second").should(visible).click();
+                            }
+                    }
+                                      """));
+        $("a#user-content-3-using-junit5-extend-test-class").parent().sibling(2).shouldHave(text("""
+                                
+                class Tests {
+                  @RegisterExtension\s
+                  static SoftAssertsExtension softAsserts = new SoftAssertsExtension();
+                                
+                  @Test
+                  void test() {
+                    Configuration.assertionMode = SOFT;
+                    open("page.html");
+                                
+                    $("#first").should(visible).click();
+                    $("#second").should(visible).click();
+                  }
+                }
+                                
+                """));
     }
 
 }
